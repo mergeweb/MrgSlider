@@ -32,6 +32,9 @@
 
 	});
 	SlideListView = Backbone.View.extend({
+		slide_width: <?php echo (!empty($slide_width))? $slide_width : 1170; ?>,
+		slide_height: <?php echo (!empty($slide_height))? $slide_height : 510; ?>,
+
 		className:'slide_collection',
 		initialize: function (){
 			this.collection.on('add', this.addOne, this);
@@ -140,8 +143,8 @@
 		},
 		// adjust the margin when the window gets resized
 		reset_margin:function () {
-			default_slide_width = 1170;
-			default_slide_height = 510;
+			default_slide_width = this.slide_width;
+			default_slide_height = this.slide_height;
 			slide_width = this.set_slide_width();
 			slide_height = slide_width*default_slide_height/default_slide_width
 			reset_margin = slide_width * -1;
