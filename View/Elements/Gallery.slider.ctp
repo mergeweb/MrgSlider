@@ -34,6 +34,7 @@
 	SlideListView = Backbone.View.extend({
 		slide_width: <?php echo (!empty($slide_width))? $slide_width : 1170; ?>,
 		slide_height: <?php echo (!empty($slide_height))? $slide_height : 510; ?>,
+		max_height: <?php echo (!empty($max_height))? $max_height : 0; ?>,
 
 		className:'slide_collection',
 		initialize: function (){
@@ -147,6 +148,9 @@
 			default_slide_height = this.slide_height;
 			slide_width = this.set_slide_width();
 			slide_height = slide_width*default_slide_height/default_slide_width
+			if (this.max_height > 0 && slide_height > this.max_height) {
+				slide_height = this.max_height;
+			}
 			reset_margin = slide_width * -1;
 			if (this.single_image) {
 				reset_margin = 0;
