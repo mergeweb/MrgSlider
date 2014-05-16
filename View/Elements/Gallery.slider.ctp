@@ -1,7 +1,15 @@
 <div id="slides_viewport"><div id="slides"></div></div>
+<script type="text/template" id="default_slide_template">
+	<div class="feature-title hidden" style="margin-left:-15px; margin-right:-15px;">
+		<h3><%= Slide.title %></h3>
+		<div class="feature-cta btn btn-primary"><a href="<%= Slide.cta_link %>"><%= Slide.cta_text %></a></div>
+	</div>
+	<img src="<%= Image.resized %>" alt="<%= Slide.title %>" />
+</script>
 <script type="text/javascript">
 	// Not needed for Anmed but I am leaving it here in case
 	var node_id = <?php echo (!empty($node))? $node['Node']['id'] : 0; ?>;
+	var slide_template =  "<?php echo (!empty($template_id)) ? $template_id : '#default_slide_template'; ?>";
 	SlideModel = Backbone.Model.extend({
 
 	})
@@ -11,15 +19,10 @@
 	SlideView = Backbone.View.extend({
 		className: 'slide',
 		initialize: function(){
+			console.log(slide_template);
 			this.model.on('remove', this.remove, this);
 		},
-		template: _.template(
-			'<div class="feature-title hidden" style="margin-left:-15px; margin-right:-15px;">'+
-				'<h3><%= Slide.title %></h3>'+
-				'<div class="feature-cta btn btn-primary"><a href="<%= Slide.cta_link %>"><%= Slide.cta_text %></a></div>'+
-			'</div>'+
-			'<img src="<%= Image.resized %>" alt="<%= Slide.title %>" />'
-		),
+		template: _.template($(slide_template).html()),
 		render: function () {
 			var attributes = this.model.toJSON();
 			this.$el.html(this.template(attributes));
