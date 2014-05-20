@@ -173,7 +173,6 @@
 				if (slideListView.slide_number == this.length) {
 					$('.nav_button#move_right').hide();
 					$('.nav_button#move_left').show();
-					console.log('hide the NEXT arrow');
 				}else if (slideListView.slide_number == 1){
 					$('.nav_button#move_right').show();
 					$('.nav_button#move_left').hide();
