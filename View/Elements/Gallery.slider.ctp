@@ -10,6 +10,7 @@
 	// Not needed for Anmed but I am leaving it here in case
 	var node_id = <?php echo (!empty($node))? $node['Node']['id'] : 0; ?>;
 	var slide_template =  "<?php echo (!empty($template_id)) ? $template_id : '#default_slide_template'; ?>";
+
 	SlideModel = Backbone.Model.extend({
 
 	})
@@ -19,7 +20,6 @@
 	SlideView = Backbone.View.extend({
 		className: 'slide',
 		initialize: function(){
-			console.log(slide_template);
 			this.model.on('remove', this.remove, this);
 		},
 		template: _.template($(slide_template).html()),
@@ -35,6 +35,8 @@
 		slide_width: <?php echo (!empty($slide_width))? $slide_width : 1170; ?>,
 		slide_height: <?php echo (!empty($slide_height))? $slide_height : 510; ?>,
 		max_height: <?php echo (!empty($max_height))? $max_height : 0; ?>,
+		looping :  '<?php echo (isset($looping) && !$looping) ? false : true; ?>',
+		slide_number : 1,
 
 		className:'slide_collection',
 		initialize: function (){
@@ -43,6 +45,7 @@
 			this.collection.on('reset', this.addAll, this);
 			this.collection.on('move_start', this.hide_text);
 			this.collection.on('move_end', this.show_text);
+			this.collection.on('move_end', this.set_arrow_buttons);
 			this.slide_width = this.set_slide_width();
 			$(window).bind('resize', _.bind(this.reset_margin, this));
 
@@ -77,6 +80,7 @@
 			}
 			this.show_text();
 			this.reset_margin();
+			this.set_arrow_buttons();
 		},
 		move_right : function (e) {
 			if (e) {
@@ -106,19 +110,21 @@
 			distance = parseInt(distance);
 			current_margin = parseInt($('.slide_collection').css('margin-left').replace('px',''));
 			if (direction && direction == 'left') {
+				this.slide_number = this.slide_number - 1;
+
 				// This accounts for the newly added element to the beginning of the floated group
 				positioner =  current_margin - distance;
 				new_margin = positioner + distance;
 				$('.slide_collection').css({'margin-left':positioner+'px'});
 				$('.slide_collection').transition({'margin-left':new_margin+'px',complete:$.proxy(function (){this.delegateEvents();this.collection.trigger('move_end');}, this)});
 			}else{
+				this.slide_number = this.slide_number + 1;
 				// This accounts for the newly removed element at the beginning of the floated group
 				positioner =  current_margin + distance;
 				new_margin = positioner - distance;
 				$('.slide_collection').css({'margin-left':positioner+'px'});
 				$('.slide_collection').transition({'margin-left':new_margin+'px',complete:$.proxy(function (){this.delegateEvents();this.collection.trigger('move_end');}, this)});
 			}
-
 		},
 		auto_slide : function () {
 			this.auto_slider = setInterval(this.move_right.bind(this), 8000);
@@ -160,6 +166,19 @@
 			$('.slide_collection .slide').css({'width':slide_width, 'height':slide_height});
 			$('#slides').css('height', slide_height);
 			$('#move_right').css('left', slide_width - 110);
+		},
+		set_arrow_buttons : function () {
+
+			if (!slideListView.looping) {
+				if (slideListView.slide_number == this.length) {
+					$('.nav_button#move_right').hide();
+					$('.nav_button#move_left').show();
+					console.log('hide the NEXT arrow');
+				}else if (slideListView.slide_number == 1){
+					$('.nav_button#move_right').show();
+					$('.nav_button#move_left').hide();
+				}
+			}
 		}
 	})
 
