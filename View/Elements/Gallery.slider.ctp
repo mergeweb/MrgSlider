@@ -176,6 +176,9 @@
 				}else if (slideListView.slide_number == 1){
 					$('.nav_button#move_right').show();
 					$('.nav_button#move_left').hide();
+				}else{
+					$('.nav_button#move_right').show();
+					$('.nav_button#move_left').show();
 				}
 			}
 		}
