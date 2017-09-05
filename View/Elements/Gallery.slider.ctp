@@ -49,6 +49,12 @@
 			this.slide_width = this.set_slide_width();
 			$(window).bind('resize', _.bind(this.reset_margin, this));
 
+			console.log(looping);
+
+			// allow keyboard users to move left and right
+			$(window).on('keyup', _.bind(this.handle_key_up, this));
+			this.add_live_region();
+
 		},
 		events:{
 			"click .nav_button#move_right":"move_right",
@@ -88,7 +94,7 @@
 			}
 			first_slide = this.collection.shift();
 			// Take the first slide and put it at the end;
-			this.collection.add(first_slide)
+			this.collection.add(first_slide);
 			this.move_slide(this.slide_width);
 		},
 
@@ -104,6 +110,7 @@
 
 		// move the slide a direction and load slides
 		move_slide: function (distance, direction) {
+			this.update_live_region();
 			this.reset_margin();
 			this.collection.trigger('move_start');
 			this.undelegateEvents();
@@ -125,6 +132,8 @@
 				$('.slide_collection').css({'margin-left':positioner+'px'});
 				$('.slide_collection').transition({'margin-left':new_margin+'px',complete:$.proxy(function (){this.delegateEvents();this.collection.trigger('move_end');}, this)});
 			}
+
+			console.log(this.slide_number);
 		},
 		auto_slide : function () {
 			this.auto_slider = setInterval(this.move_right.bind(this), 8000);
@@ -181,6 +190,30 @@
 					$('.nav_button#move_left').show();
 				}
 			}
+		},
+		set_slide_number: function(direction) {
+
+		},
+		handle_key_up : function(e) {
+			if(e.keyCode == 37) {
+				this.move_left();
+			} else if(e.keyCode == 39) {
+				this.move_right();
+			} else if(e.keyCode == 27) {
+				this.disable_auto_slide();
+			}
+		},
+		add_live_region: function() {
+			console.log('add live region');
+			this.liveregion = document.createElement('div');
+			this.liveregion.setAttribute('aria-live', 'polite');
+			this.liveregion.setAttribute('aria-atomic', 'true');
+			this.liveregion.setAttribute('class', 'liveregion visuallyhidden');
+			$('#slides_viewport').append(this.liveregion);
+		},
+		update_live_region: function() {
+			console.log(this.liveregion);
+			this.liveregion.textContent = 'Item ' + 1 + ' of ' + 2;
 		}
 	})
 
