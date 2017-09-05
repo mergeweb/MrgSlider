@@ -73,7 +73,7 @@
 			this.collection.forEach(this.addOne, this);
 			if (this.collection.length >= 2) {
 				this.single_image = false;
-				this.$el.append('<div class="nav_button" id="move_left"><span class="glyphicon glyphicon-chevron-left"></span></div><div class="nav_button" id="move_right"><span class="glyphicon glyphicon-chevron-right"></span></div>');
+				this.$el.append('<button class="nav_button" id="move_left" aria-label="Previous Slide"><span class="glyphicon glyphicon-chevron-left"></span></button><button class="nav_button" aria-label="Next slide" id="move_right"><span class="glyphicon glyphicon-chevron-right"></span></button>');
 			}else{
 				this.single_image = true;
 				this.disable_auto_slide();
