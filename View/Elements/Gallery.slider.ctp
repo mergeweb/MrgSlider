@@ -41,19 +41,17 @@
 		className:'slide_collection',
 		initialize: function (){
 			this.collection.on('add', this.addOne, this);
-			this.collection.on('reset', this.auto_slide, this);
+			// this.collection.on('reset', this.auto_slide, this);
 			this.collection.on('reset', this.addAll, this);
+			this.collection.on('reset', this.add_live_region, this);
 			this.collection.on('move_start', this.hide_text);
 			this.collection.on('move_end', this.show_text);
 			this.collection.on('move_end', this.set_arrow_buttons);
 			this.slide_width = this.set_slide_width();
 			$(window).bind('resize', _.bind(this.reset_margin, this));
 
-			console.log(looping);
-
 			// allow keyboard users to move left and right
 			$(window).on('keyup', _.bind(this.handle_key_up, this));
-			this.add_live_region();
 
 		},
 		events:{
@@ -110,22 +108,29 @@
 
 		// move the slide a direction and load slides
 		move_slide: function (distance, direction) {
-			this.update_live_region();
 			this.reset_margin();
 			this.collection.trigger('move_start');
 			this.undelegateEvents();
 			distance = parseInt(distance);
 			current_margin = parseInt($('.slide_collection').css('margin-left').replace('px',''));
 			if (direction && direction == 'left') {
-				this.slide_number = this.slide_number - 1;
-
+				if(this.slide_number == 1) {
+					this.slide_number = this.collection.length;
+				} else {
+					this.slide_number = this.slide_number - 1;
+				}
 				// This accounts for the newly added element to the beginning of the floated group
 				positioner =  current_margin - distance;
 				new_margin = positioner + distance;
 				$('.slide_collection').css({'margin-left':positioner+'px'});
 				$('.slide_collection').transition({'margin-left':new_margin+'px',complete:$.proxy(function (){this.delegateEvents();this.collection.trigger('move_end');}, this)});
 			}else{
-				this.slide_number = this.slide_number + 1;
+				if(this.slide_number + 1 >= this.collection.length + 1) {
+					this.slide_number = 1;
+				} else {
+					this.slide_number = this.slide_number + 1;
+				}
+
 				// This accounts for the newly removed element at the beginning of the floated group
 				positioner =  current_margin + distance;
 				new_margin = positioner - distance;
@@ -133,7 +138,7 @@
 				$('.slide_collection').transition({'margin-left':new_margin+'px',complete:$.proxy(function (){this.delegateEvents();this.collection.trigger('move_end');}, this)});
 			}
 
-			console.log(this.slide_number);
+			this.update_live_region();
 		},
 		auto_slide : function () {
 			this.auto_slider = setInterval(this.move_right.bind(this), 8000);
@@ -204,16 +209,16 @@
 			}
 		},
 		add_live_region: function() {
-			console.log('add live region');
 			this.liveregion = document.createElement('div');
 			this.liveregion.setAttribute('aria-live', 'polite');
 			this.liveregion.setAttribute('aria-atomic', 'true');
-			this.liveregion.setAttribute('class', 'liveregion visuallyhidden');
+			this.liveregion.setAttribute('class', 'liveregion screen-reader-text');
 			$('#slides_viewport').append(this.liveregion);
+
+			this.update_live_region();
 		},
 		update_live_region: function() {
-			console.log(this.liveregion);
-			this.liveregion.textContent = 'Item ' + 1 + ' of ' + 2;
+			this.liveregion.textContent = 'Item ' + this.slide_number + ' of ' + this.collection.length;
 		}
 	})
 
