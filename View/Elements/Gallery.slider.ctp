@@ -1,7 +1,7 @@
 <div id="slides_viewport"><div id="slides"></div></div>
 <script type="text/template" id="default_slide_template">
 	<div class="feature-title hidden" style="margin-left:-15px; margin-right:-15px;">
-		<h3><%= Slide.title %></h3>
+		<h3 class="<%= Slide.text_color %>"><%= Slide.title %></h3>
 		<div class="feature-cta btn btn-primary"><a href="<%= Slide.cta_link %>"><%= Slide.cta_text %></a></div>
 	</div>
 	<img src="<%= Image.resized %>" alt="<%= Slide.title %>" />
